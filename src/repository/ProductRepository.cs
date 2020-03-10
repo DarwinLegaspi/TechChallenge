@@ -13,6 +13,26 @@ namespace OrderFulfilmentService
       LoadEntities();
     }
 
+    // throws ItemNotFoundException
+    public void UpdateQuantityOnHand(int productId, int quantity) 
+    {
+      var product = GetProduct(productId);
+
+      product.QuantityOnHand = quantity;
+    }  
+
+    // throws ItemNotFoundException
+    public ProductEntity GetProduct(int productId)
+    {
+      var productEntity = ProductEntities.FirstOrDefault( product => product.ProductId == productId );
+
+      if (productEntity != default(ProductEntity)) {
+        return productEntity;
+      } 
+
+      throw new ItemNotFoundException(EntityType.Product, $"Product not found: {productId}");
+    }    
+
     private void LoadEntities() 
     {
       var filepath = $"{Directory.GetCurrentDirectory()}\\data.json";

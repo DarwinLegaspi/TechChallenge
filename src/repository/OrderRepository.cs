@@ -17,12 +17,20 @@ namespace OrderFulfilmentService
       return OrderEntities.ToList();
     }
     
+    // throws ItemNotFoundException
     public void UpdateStatus(int orderId, string status) {
       var orderEntity = OrderEntities.FirstOrDefault( order => order.OrderId == orderId );
 
-      if (orderEntity != default(OrderEntity)) {
+      if (orderEntity != default(OrderEntity)) 
+      {
         orderEntity.Status = status;
       } 
+      else 
+      {
+        throw new ItemNotFoundException(EntityType.Order, $"Order not found: {orderId}");
+      } 
+
+      return ;
     }
 
     private void LoadEntities() 

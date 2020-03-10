@@ -2,25 +2,34 @@ using Nancy;
 using Nancy.ModelBinding;
 using System;
 
-namespace OrderFulfilmentService {
+namespace OrderFulfilmentService 
+{
   public class OrderFulfilmentModule: NancyModule
   {
-    public OrderFulfilmentModule()
+    public OrderFulfilmentModule(IOrderFulfilmentProvider productOrderProvider)
     {
-        Get("/", args => "Root ");
+        // Default endpoint
+        Get("/", args => "Welcome to NOMSS");
         
+        // order fulfilment endpoint
         Post("/api/v1/warehouse/fulfilment", args => 
         {
           OrderFulfilment receivedData = new OrderFulfilment();
-         try {
+
+          try 
+          {
             receivedData = this.Bind<OrderFulfilment>();
+
+            // TODO: Add endpoint validator
+
+            return productOrderProvider.Process(receivedData.orderIds);
           }
-          catch(Exception ex) {
+          catch(Exception ex) 
+          {
             Console.WriteLine($"Exception encountered: {ex.Message}");
+            
             throw;
           }
-
-          return new { unfulfillable = receivedData.orderIds}; 
         });
     }
    
