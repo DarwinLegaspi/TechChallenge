@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace OrderFulfilmentService 
+namespace OrderFulfilmentService
 {
   public class OrderRepository : IOrderRepository 
   {
@@ -12,7 +10,7 @@ namespace OrderFulfilmentService
 
     public OrderRepository()
     {
-      InitEntities();
+      LoadEntities();
     }
 
     public IEnumerable<OrderEntity> GetOrders() {
@@ -27,22 +25,13 @@ namespace OrderFulfilmentService
       } 
     }
 
-    private void InitEntities() 
+    private void LoadEntities() 
     {
       var filepath = $"{Directory.GetCurrentDirectory()}\\data.json";
 
-      // read JSON directly from a file
-      using (StreamReader file = File.OpenText(filepath))
-      using (JsonTextReader reader = new JsonTextReader(file))
-      {
-        var dataJsonObj = (JObject)JToken.ReadFrom(reader);
-
-        var ordersProp = dataJsonObj.Property("orders");
-
-        var ordersValue = (JArray) ordersProp.Value;
-
-        OrderEntities = ordersValue.ToObject<IEnumerable<OrderEntity>>();
-      }      
+      JsonHelper.GetObjects(filepath, "orders", 
+        (orders) =>  
+          OrderEntities =orders.ToObject<IEnumerable<OrderEntity>>());  
     }
   }
 }
