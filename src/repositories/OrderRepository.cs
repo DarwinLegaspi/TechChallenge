@@ -17,6 +17,34 @@ namespace OrderFulfilmentService
       return OrderEntities.ToList();
     }
     
+    public IEnumerable<OrderEntity> GetOrders(IEnumerable<int> orderIds) 
+    {
+      var orderNotFound = new List<int>();
+      
+      var orders = new List<OrderEntity>();
+
+      foreach(var orderId in orderIds) 
+      {
+        var order = OrderEntities.FirstOrDefault( entity => entity.OrderId == orderId );
+        
+        if (order == default(OrderEntity)) 
+        {
+          orderNotFound.Add(orderId);
+        }
+        else 
+        {
+          orders.Add(order);
+        }
+      }
+
+      if (orderNotFound.Any()) 
+      {
+        throw new ItemNotFoundException(EntityType.Order, $"Orders not found: {string.Join(",", orderNotFound)}");
+      }
+
+      return orders;
+    }
+
     // throws ItemNotFoundException
     public void UpdateStatus(int orderId, string status) {
       var orderEntity = OrderEntities.FirstOrDefault( order => order.OrderId == orderId );

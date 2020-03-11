@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
+
 namespace OrderFulfilmentService
 {
   public interface IProductRepository
   {
-    ProductEntity GetProduct(int productId);
-    void UpdateQuantityOnHand(int productId, int quantity);
+    IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds);
+    void UpdateQuantityOnHand(IEnumerable<Tuple<int, int>> productQuantities); 
   }
 }

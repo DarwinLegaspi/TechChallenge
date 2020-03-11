@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+
 namespace OrderFulfilmentService
 {
   public interface IProductsService
   {
-    void TakeAwayStock(int productId, int quantity);
+    void ReduceProductQuantities(IEnumerable<ProductOrder> productOrders);
+    IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds);
+    void RaisePurchaseOrderIfNeeded(IEnumerable<ProductOrder> productOrders);
   }
 }

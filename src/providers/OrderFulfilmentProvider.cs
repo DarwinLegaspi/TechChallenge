@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrderFulfilmentService
 {
@@ -16,36 +17,60 @@ namespace OrderFulfilmentService
 
     public object Process(IEnumerable<int> orderIds) 
     {
-      // validate Orders
-          // validate Orders should validate if product in order still exists
-          // will need to return a validation exception if an order is not valid 
-          // or a product order is not valid.
+      var unfulfilledOrders = new List<int>();     
 
-      // Get Orders(orderIds)
-         // what do you do if order or product is  not found?
-         // maybe bad request?
+      var orders = Orders.GetOrders(orderIds);
 
-          // major question?  An Order can contain multiple product order,
-          // If item order is unfulfilled, should you not process the order 
-          // and mark the order as unfulfilled?
+      foreach (var order in orders) {
 
-      // For each order
-         // var productOrders = order.GetProducts(order.itemOrders) 
-         
-         // var canFullFilOrders = product.CanSupplyProducts([{productId, quantity}])
+        var orderEntities = order.Items.Select( item => item);
 
-         // if canFullFilOrders
-         //   product.ReduceProductQuantities([{productId, quantity}])
-         //   order.fullfilOrder
-         //   product.RaisePurchaseOrderIfNeeded
-         // else
-              // order.UnfullfilOrder
-              // Add to unfulfilOrders
-         // end     
-      // End for each order
+        var products = Products.GetProducts(
+            orderEntities.Select(p => p.ProductId));
 
+        var productOrders = CreateProductOrders(products, orderEntities);
 
-      return new { unfulfillable = orderIds}; 
+        // check if all products in the order can be fulfilled
+        // if one product order fail the order, and then continue 
+        // with the order run
+        if (CanFulFilOrder(productOrders)) 
+        {
+          Products.ReduceProductQuantities(productOrders);
+          
+          Orders.FulFilOrder(order.OrderId);
+          
+          Products.RaisePurchaseOrderIfNeeded(productOrders);          
+        }
+        else 
+        {
+          Orders.UnFulFilOrder(order.OrderId);
+          
+          unfulfilledOrders.Add(order.OrderId);
+        }
+      }    
+
+      return new { unfulfillable = unfulfilledOrders}; 
+    }
+
+    private IEnumerable<ProductOrder> CreateProductOrders(IEnumerable<ProductEntity> products, IEnumerable<OrderItemEntity> orderEntities)
+    {
+      var result = products.Join(orderEntities,
+                    product => product.ProductId,
+                    orderEntity => orderEntity.ProductId,
+                    (p, oe) => new ProductOrder { 
+                        OrderId = oe.OrderId,
+                        ProductId = p.ProductId,
+                        QuantityOnHand = p.QuantityOnHand,
+                        OrderedQuantity = oe.Quantity,
+                        ReOrderThreshold = p.ReorderThreshold
+                      });
+
+      return result;
+    }
+
+    private bool CanFulFilOrder(IEnumerable<ProductOrder> productOrders)
+    {
+      return productOrders.Any(po => (po.QuantityOnHand - po.OrderedQuantity) >= 0); 
     }
   }
 }

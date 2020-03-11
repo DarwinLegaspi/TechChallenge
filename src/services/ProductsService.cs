@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,29 +13,25 @@ namespace OrderFulfilmentService
     {
       ProductRepository = repository;    
     }
-
-    public void TakeAwayStock(int productId, int quantity)
+    public IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds) 
     {
-      var product = ProductRepository.GetProduct(productId);
+       return ProductRepository.GetProducts(productIds);
+    } 
 
-      if (quantity <= product.QuantityOnHand) 
-      {
-        var newQuantity = product.QuantityOnHand - quantity;
-        
-        ProductRepository.UpdateQuantityOnHand(productId, newQuantity);
+    public void ReduceProductQuantities(IEnumerable<ProductOrder> productOrders)
+    {
+      var productQuanties = productOrders.Select( po => 
+        new Tuple<int, int>(po.ProductId, po.QuantityOnHand - po.OrderedQuantity)); // productId, newQuantityOnHand
 
-        // TODO: Check if needed to raise purchase order. Might not be the best place 
-      }
-      else {
-        var message = 
-          $@"Insuficient quantity on hand for productId: {productId}. 
-          Quantity on hand = {product.QuantityOnHand} requested quantity = {quantity}";
-        
-        throw new InsufficientProductQuantityException(message);
-      }
-
-      return;
+      ProductRepository.UpdateQuantityOnHand(productQuanties);
     }
 
+    public void RaisePurchaseOrderIfNeeded(IEnumerable<ProductOrder> productOrders)
+    {
+      var productsToReStock = productOrders.Where(
+        po => (po.QuantityOnHand - po.OrderedQuantity) <= po.ReOrderThreshold );
+
+      //TODO call service to restock product  
+    }
   }
 }

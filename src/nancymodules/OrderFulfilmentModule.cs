@@ -24,6 +24,16 @@ namespace OrderFulfilmentService
 
             return productOrderProvider.Process(receivedData.orderIds);
           }
+          catch(ItemNotFoundException ex) 
+          {
+            Console.WriteLine(ex);
+            
+            var response =  (Response)ex.Message;
+            
+            response.StatusCode = HttpStatusCode.BadRequest;
+
+            return response; 
+          }
           catch(Exception ex) 
           {
             Console.WriteLine($"Exception encountered: {ex.Message}");

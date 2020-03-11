@@ -18,6 +18,11 @@ namespace OrderFulfilmentService
       return OrderRepository.GetOrders();
     }
 
+    public IEnumerable<OrderEntity> GetOrders(IEnumerable<int> orderIds) 
+    {
+      return OrderRepository.GetOrders(orderIds);
+    }    
+
     public void FulFilOrder(int orderId) 
     {
       OrderRepository.UpdateStatus(orderId, "FulFilled");

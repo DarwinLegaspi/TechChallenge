@@ -1,7 +1,7 @@
 
 namespace OrderFulfilmentService
 {
-  public class OrderItemEntity
+  public class OrderItemEntity 
   {
     public int OrderId { get; set; }  
     public int ProductId { get; set; }  

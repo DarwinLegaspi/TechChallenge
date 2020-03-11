@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,25 +14,43 @@ namespace OrderFulfilmentService
       LoadEntities();
     }
 
-    // throws ItemNotFoundException
-    public void UpdateQuantityOnHand(int productId, int quantity) 
+    public void UpdateQuantityOnHand(IEnumerable<Tuple<int, int>> productQuantities) 
     {
-      var product = GetProduct(productId);
+      var products = ProductEntities.ToDictionary( key => key.ProductId,
+                                               product => product); 
 
-      product.QuantityOnHand = quantity;
+      foreach(var productQuantity in productQuantities) {
+        products[productQuantity.Item1].QuantityOnHand = productQuantity.Item2;
+      }
     }  
 
-    // throws ItemNotFoundException
-    public ProductEntity GetProduct(int productId)
+    public IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds) 
     {
-      var productEntity = ProductEntities.FirstOrDefault( product => product.ProductId == productId );
+      var producstNotFound = new List<int>();
+      
+      var products = new List<ProductEntity>();
 
-      if (productEntity != default(ProductEntity)) {
-        return productEntity;
-      } 
+      foreach(var productId in productIds) 
+      {
+        var product = ProductEntities.FirstOrDefault( entity => entity.ProductId == productId );
+        
+        if (product == default(ProductEntity)) 
+        {
+          producstNotFound.Add(productId);
+        }
+        else 
+        {
+          products.Add(product);
+        }
+      }
 
-      throw new ItemNotFoundException(EntityType.Product, $"Product not found: {productId}");
-    }    
+      if (producstNotFound.Any()) 
+      {
+        throw new ItemNotFoundException(EntityType.Product, $"Product(s) not found: {string.Join(",", producstNotFound)}");
+      }
+
+      return products;
+    }
 
     private void LoadEntities() 
     {
