@@ -20,15 +20,20 @@ namespace OrderFulfilmentService
     {
       var unfulfilledOrders = new List<int>();     
 
+      // Gets all requested orders. Throws an ItemNotFound exception if one
+      // order is not found
       var orders = Orders.GetOrders(orderIds);
 
       foreach (var order in orders) 
       {
+        // Gets all product items within the order
         var orderEntities = order.Items.Select( item => item).ToList();
-
+  
+        // Gets the product entities of all product items
         var products = Products.GetProducts(
             orderEntities.Select(p => p.ProductId));
 
+        // Gets a list of Product entity and the product item order
         var productOrders = CreateProductOrders(products, orderEntities);
 
         // check if all products in the order can be fulfilled
