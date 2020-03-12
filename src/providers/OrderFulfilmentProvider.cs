@@ -24,7 +24,7 @@ namespace OrderFulfilmentService
 
       foreach (var order in orders) 
       {
-        var orderEntities = order.Items.Select( item => item);
+        var orderEntities = order.Items.Select( item => item).ToList();
 
         var products = Products.GetProducts(
             orderEntities.Select(p => p.ProductId));
@@ -101,7 +101,7 @@ namespace OrderFulfilmentService
 
     private bool CanFulFilOrder(IEnumerable<ProductOrder> productOrders)
     {
-      return productOrders.Any(po => (po.QuantityOnHand - po.OrderedQuantity) >= 0); 
+      return productOrders.All(po => (po.QuantityOnHand - po.OrderedQuantity) >= 0); 
     }
   }
 }

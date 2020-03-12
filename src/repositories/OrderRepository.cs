@@ -39,7 +39,7 @@ namespace OrderFulfilmentService
 
       if (orderNotFound.Any()) 
       {
-        throw new ItemNotFoundException(EntityType.Order, $"Orders not found: {string.Join(",", orderNotFound)}");
+        throw new ItemNotFoundException(EntityType.Order, $"Order(s) not found: {string.Join(", ", orderNotFound)}");
       }
 
       return orders;
