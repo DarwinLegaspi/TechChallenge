@@ -11,8 +11,14 @@
         if a product does not exist  
           respond with bad request
 
-          major Assumption
+        Assumptions
              An Order can contain multiple product orders,
              and if one of product order is unfulfillable, mark the order as unfulfillable
           
-          An order run is the list of input orderIds
+             An order run is the list of input orderIds
+
+             When an order can not be fulfilled and the product quantity on hand is 
+             already below the reorder threshold, then a purchase order will not be raised.
+             This is because no stock was taken from the product quantity on hand.
+
+
