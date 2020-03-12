@@ -6,11 +6,13 @@ namespace OrderFulfilmentService
 {
   public class OrderFulfilmentModule: NancyModule
   {
-    public OrderFulfilmentModule(IOrderFulfilmentProvider productOrderProvider)
+    public OrderFulfilmentModule(IOrderFulfilmentProvider productOrderProvider, IPurchaseOrderService poService)
     {
         // Default endpoint
         Get("/", args => "Welcome to NOMSS");
-        
+
+        Get("/", args => poService.GetPurchaseOrders());
+
         // order fulfilment endpoint
         Post("/api/v1/warehouse/fulfilment", args => 
         {
@@ -19,8 +21,6 @@ namespace OrderFulfilmentService
           try 
           {
             receivedData = this.Bind<OrderFulfilment>();
-
-            // TODO: Add endpoint validator
 
             return productOrderProvider.Process(receivedData.orderIds);
           }

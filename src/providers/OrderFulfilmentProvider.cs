@@ -21,8 +21,8 @@ namespace OrderFulfilmentService
 
       var orders = Orders.GetOrders(orderIds);
 
-      foreach (var order in orders) {
-
+      foreach (var order in orders) 
+      {
         var orderEntities = order.Items.Select( item => item);
 
         var products = Products.GetProducts(

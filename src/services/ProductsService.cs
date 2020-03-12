@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace OrderFulfilmentService
@@ -8,10 +7,13 @@ namespace OrderFulfilmentService
   public class ProductsService : IProductsService
   {
     private IProductRepository ProductRepository { get; }
-    
-    public ProductsService(IProductRepository repository)
+    private IPurchaseOrderService POService { get; }
+
+    public ProductsService(IProductRepository repository, IPurchaseOrderService poService)
     {
       ProductRepository = repository;    
+
+      POService = poService;
     }
     public IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds) 
     {
@@ -31,7 +33,9 @@ namespace OrderFulfilmentService
       var productsToReStock = productOrders.Where(
         po => (po.QuantityOnHand - po.OrderedQuantity) <= po.ReOrderThreshold );
 
-      //TODO call service to restock product  
+      var productIds = productsToReStock.Select(p => p.ProductId);
+
+      POService.RaisePurchaseOrders(productIds);
     }
   }
 }
