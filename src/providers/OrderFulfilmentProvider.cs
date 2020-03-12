@@ -6,6 +6,7 @@ namespace OrderFulfilmentService
   public class OrderFulfilmentProvider : IOrderFulfilmentProvider 
   {
     public IOrdersService Orders { get; }
+    
     public IProductsService Products { get; }    
     
     public OrderFulfilmentProvider(IOrdersService ordersService, IProductsService productsService)
@@ -51,6 +52,36 @@ namespace OrderFulfilmentService
 
       return new { unfulfillable = unfulfilledOrders}; 
     }
+
+    public void Reset()
+    {
+      Orders.Reset();
+    
+      Products.Reset();
+    }
+
+    public object StatusSummary()
+    {
+      var orders = Orders.GetOrders();
+
+      var products = Products.GetProducts();
+
+      var summaryObject = new 
+      {
+          Products = products.Select(p => new {
+            p.ProductId,
+            p.Description,
+            p.QuantityOnHand,
+            p.ReorderThreshold
+          }) , 
+          Orders = orders.Select(o => new {
+            o.OrderId,
+            o.Status
+          })
+      };
+
+      return summaryObject;
+    }    
 
     private IEnumerable<ProductOrder> CreateProductOrders(IEnumerable<ProductEntity> products, IEnumerable<OrderItemEntity> orderEntities)
     {

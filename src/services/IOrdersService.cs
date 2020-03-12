@@ -8,5 +8,6 @@ namespace OrderFulfilmentService
     IEnumerable<OrderEntity> GetOrders(IEnumerable<int> orderIds); 
     void FulFilOrder(int orderId); 
     void UnFulFilOrder(int orderId);     
+    void Reset();
   }
 }

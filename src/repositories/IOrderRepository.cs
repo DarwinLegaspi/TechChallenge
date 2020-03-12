@@ -7,5 +7,6 @@ namespace OrderFulfilmentService
       IEnumerable<OrderEntity> GetOrders(); 
       IEnumerable<OrderEntity> GetOrders(IEnumerable<int> orderIds); 
       void UpdateStatus(int orderId, string status);
+      void Reset();
   }
 }

@@ -19,10 +19,16 @@ namespace OrderFulfilmentService
       var products = ProductEntities.ToDictionary( key => key.ProductId,
                                                product => product); 
 
-      foreach(var productQuantity in productQuantities) {
+      foreach(var productQuantity in productQuantities) 
+      {
         products[productQuantity.Item1].QuantityOnHand = productQuantity.Item2;
       }
     }  
+
+    public IEnumerable<ProductEntity> GetProducts() 
+    {
+      return ProductEntities;
+    }
 
     public IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds) 
     {
@@ -50,6 +56,11 @@ namespace OrderFulfilmentService
       }
 
       return products;
+    }
+
+    public void Reset() 
+    {
+      LoadEntities(); 
     }
 
     private void LoadEntities() 

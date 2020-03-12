@@ -8,12 +8,26 @@ namespace OrderFulfilmentService
   {
     public OrderFulfilmentModule(IOrderFulfilmentProvider productOrderProvider, IPurchaseOrderService poService)
     {
-        // Default endpoint
+        // Debug Endpoints
         Get("/", args => "Welcome to NOMSS");
 
-        Get("/", args => poService.GetPurchaseOrders());
+        Get("/api/v1/warehouse/fulfilment/purchaseorders", 
+          args => poService.GetPurchaseOrders());
 
-        // order fulfilment endpoint
+        Get("/api/v1/warehouse/fulfilment/statussummary", 
+          args => productOrderProvider.StatusSummary());
+
+        Post("/api/v1/warehouse/fulfilment/reset", args => 
+        {
+          productOrderProvider.Reset();
+          
+          poService.Reset();
+
+          return "Input Data Reset.";
+        });
+
+        
+        // Main order fulfilment endpoint
         Post("/api/v1/warehouse/fulfilment", args => 
         {
           OrderFulfilment receivedData = new OrderFulfilment();

@@ -15,6 +15,12 @@ namespace OrderFulfilmentService
 
       POService = poService;
     }
+
+    public IEnumerable<ProductEntity> GetProducts() 
+    {
+      return ProductRepository.GetProducts();
+    }
+
     public IEnumerable<ProductEntity> GetProducts(IEnumerable<int> productIds) 
     {
        return ProductRepository.GetProducts(productIds);
@@ -36,6 +42,11 @@ namespace OrderFulfilmentService
       var productIds = productsToReStock.Select(p => p.ProductId);
 
       POService.RaisePurchaseOrders(productIds);
+    }
+
+    public void Reset()
+    {
+      ProductRepository.Reset();
     }
   }
 }

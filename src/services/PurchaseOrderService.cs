@@ -9,8 +9,9 @@ namespace OrderFulfilmentService
 
     public PurchaseOrderService()
     {
-      ProductIds = new HashSet<int>();  
+      Reset();
     }
+    
     public void RaisePurchaseOrders(IEnumerable<int> productIds) 
     {
       foreach(var productId in productIds) 
@@ -25,5 +26,10 @@ namespace OrderFulfilmentService
         pi => $"Purchase Order raised for product Id: {pi}");
 
     }
+
+    public void Reset()
+    {
+      ProductIds = new HashSet<int>();  
+    }    
   }
 }

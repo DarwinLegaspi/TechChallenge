@@ -61,6 +61,11 @@ namespace OrderFulfilmentService
       return ;
     }
 
+    public void Reset() 
+    {
+      LoadEntities(); 
+    }
+
     private void LoadEntities() 
     {
       var filepath = $"{Directory.GetCurrentDirectory()}\\data.json";

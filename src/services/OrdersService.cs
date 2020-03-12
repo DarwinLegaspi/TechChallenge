@@ -32,6 +32,10 @@ namespace OrderFulfilmentService
     {
       OrderRepository.UpdateStatus(orderId, "Error: Unfulfillable");
     }
-
+    
+    public void Reset()
+    {
+      OrderRepository.Reset();
+    }
   }
 }
