@@ -4,10 +4,9 @@
 - An Order can contain multiple product orders,
   and if one of product order is unfulfillable, mark the order as unfulfillable.
 
-- When an order can not be fulfilled and the product 
-  quantity on hand is already below the reorder threshold, then a purchase order will not be raised.
+- A purchase order will only be raised for a product id when an order can be fulfilled. 
   
-  This is because no stock was taken from the product quantity on hand.  
+  If an order is unfulfillable then no stock is taken from the product quantity on hand. 
 
 - A purchase order for a product will only be raised once.
 
