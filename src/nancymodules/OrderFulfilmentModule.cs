@@ -1,6 +1,7 @@
 using Nancy;
 using Nancy.ModelBinding;
 using System;
+using System.Linq;
 
 namespace OrderFulfilmentService 
 {
@@ -36,17 +37,18 @@ namespace OrderFulfilmentService
           {
             receivedData = this.Bind<OrderFulfilment>();
 
+            if (!receivedData.orderIds.Any()) 
+            {
+              return BadRequestResponse("No Order Ids to process."); 
+            }
+
             return productOrderProvider.Process(receivedData.orderIds);
           }
           catch(ItemNotFoundException ex) 
           {
-            Console.WriteLine(ex);
-            
-            var response =  (Response)ex.Message;
-            
-            response.StatusCode = HttpStatusCode.BadRequest;
+            Console.WriteLine(ex.Message);
 
-            return response; 
+            return BadRequestResponse(ex.Message); 
           }
           catch(Exception ex) 
           {
@@ -55,6 +57,15 @@ namespace OrderFulfilmentService
             throw;
           }
         });
+    }
+
+    private Response BadRequestResponse(string message)
+    {
+        var response =  (Response)message;
+        
+        response.StatusCode = HttpStatusCode.BadRequest;
+
+        return response;           
     }
    
   }
