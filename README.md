@@ -33,7 +33,7 @@
 
 **To run the API**
 - make sure to install dotnet core 2.1 or higher
-- and run dotnet run on the project level directory
+- issue the command ```dotnet``` run in the project level directory
 
 **EndPoint routes available**
 - Main Endpoint 
